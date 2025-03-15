@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { Provider } from "react-redux";
 import TransactionsView from "./views/TransactionsView";
-import CreateTransactionView from "./views/CreateTransactionView";
+//import CreateTransactionView from "./views/CreateTransactionView";
 import Sidebar from "./components/Sidebar";
 import "./App.css";
 import store from "./store";
@@ -17,10 +17,12 @@ function App() {
             <Routes>
               <Route path="/" element={<DashboardView />} />
               <Route path="/transactions" element={<TransactionsView />} />
+              {/*
               <Route
                 path="/create_transaction"
                 element={<CreateTransactionView />}
               />
+              */}
             </Routes>
           </div>
         </div>

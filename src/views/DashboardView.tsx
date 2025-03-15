@@ -1,12 +1,15 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useAppSelector } from "../hooks/redux-hooks";
-import { TransactionState } from "../store/slices/transactionsSlice";
+import { TransactionState, useGetTransactionsQuery } from "../store/slices/transactionsSlice";
 
 const DashboardView: React.FC = () => {
-  const transactions: TransactionState[] = useAppSelector(
-    (state) => state.transactions
-  );
+  const { data, error, isLoading } = useGetTransactionsQuery({});
+
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.toString()}</p>;
+
+  const transactions = data?.data;
+  console.log(transactions);
 
   const today = new Date();
   const yesterday = new Date(today);
@@ -21,20 +24,24 @@ const DashboardView: React.FC = () => {
   };
 
   const totalToday = transactions
-    .filter((transaction) => isSameDay(new Date(transaction.transaction_date), today))
-    .reduce((total, transaction) => total + +transaction.transaction_value, 0);
+    .filter((transaction: TransactionState) => isSameDay(new Date(transaction.transaction_date), today))
+    .reduce((total: number, transaction: TransactionState) => total + +transaction.transaction_value, 0);
+  console.log(totalToday);
 
   const totalYesterday = transactions
-    .filter((transaction) => isSameDay(new Date(transaction.transaction_date), yesterday))
-    .reduce((total, transaction) => total + +transaction.transaction_value, 0);
+    .filter((transaction: TransactionState) => isSameDay(new Date(transaction.transaction_date), yesterday))
+    .reduce((total: number, transaction: TransactionState) => total + +transaction.transaction_value, 0);
 
   const totalThisMonth = transactions
     .filter(
-      (transaction) =>
+      (transaction: TransactionState) =>
         new Date(transaction.transaction_date).getMonth() === today.getMonth() &&
         new Date(transaction.transaction_date).getFullYear() === today.getFullYear()
     )
-    .reduce((total, transaction) => total + +transaction.transaction_value, 0);
+    .reduce((total: number, transaction: TransactionState) => total + +transaction.transaction_value, 0);
+
+  const totalAllTime = transactions
+    .reduce((total: number, transaction: TransactionState) => total + +transaction.transaction_value, 0);
 
   return (
     <>
@@ -62,6 +69,12 @@ const DashboardView: React.FC = () => {
             <div className="card-body">
               <h2 className="card-title">Total This Month</h2>
               <p>${totalThisMonth}</p>
+            </div>
+          </div>
+          <div className="card bg-base-100 shadow-xl">
+            <div className="card-body">
+              <h2 className="card-title">Total of all Time</h2>
+              <p>${totalAllTime}</p>
             </div>
           </div>
         </div>
