@@ -1,20 +1,17 @@
 import React, { useState } from "react";
-import { useAppDispatch } from "../hooks/redux-hooks";
 import { useNavigate } from "react-router-dom";
-import {
-  TransactionStatus,
-  addTransaction,
-} from "../store/slices/transactionsSlice";
+import { TransactionStatus, useAddTransactionMutation, useGetTransactionsQuery } from "../store/slices/transactionsSlice";
 
 function CreateTransactionView() {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
+  const [addTransaction, addTransactionResult] = useAddTransactionMutation();
+  const { refetch: refetchTransactions } = useGetTransactionsQuery({});
   const today = +new Date();
   const [formData, setFormData] = useState({
     transaction_id: "",
     transaction_value: 0,
     transaction_date: today,
-    transaction_status: TransactionStatus.Pending,
+    transaction_status: TransactionStatus.PENDING,
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -25,9 +22,15 @@ function CreateTransactionView() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    dispatch(addTransaction(formData));
+    await addTransaction(formData);
+    if (addTransactionResult.error) {
+      alert("Failed to create transaction");
+      return;
+    }
+    await refetchTransactions();
+    alert("Transaction created successfully");
     navigate("/");
   };
 
@@ -79,7 +82,11 @@ function CreateTransactionView() {
             className="input input-bordered w-full"
           />
         </div>
-        <button type="submit" className="btn btn-primary w-full">
+        <button
+          type="submit"
+          className="btn btn-primary w-full"
+          disabled={addTransactionResult.isLoading}
+        >
           Create Transaction
         </button>
       </form>
