@@ -70,3 +70,8 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+.bar-chart {
+  margin-left: -50px;
+  margin-right: -50px;
+}

@@ -16,7 +16,7 @@ export enum TransactionStatus {
 
 export const transactionsApi = createApi({
   reducerPath: "transactionsApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:8001/api/v1/" }),
+  baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_BASE_URL }),
   endpoints: (builder) => ({
     getTransactions: builder.query({
       query: () => "transactions",
